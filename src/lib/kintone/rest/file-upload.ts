@@ -6,7 +6,6 @@ import axios from "axios";
 
 import type { PathLike } from "node:fs";
 import type { AxiosResponse } from "axios";
-import type { RestResponse } from "@/types/kintone/rest/file-upload";
 
 /**
  * fileUploadAsync

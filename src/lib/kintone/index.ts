@@ -1,3 +1,3 @@
-import rest from "./rest";
+import * as rest from "./rest";
 
-export default { rest };
+export { rest };
