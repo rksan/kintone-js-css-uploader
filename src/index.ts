@@ -10,13 +10,34 @@ import dotenv from "dotenv";
 
 import { jsCssUploaderAsync } from "@/lib/kintone";
 
-const rl = readline.createInterface({
+//------
+// CLI
+//------
+
+// read .env
+dotenv.config();
+
+// read command line args
+/** @see https://nodejs.org/api/util.html#utilparseargsconfig */
+const { values } = util.parseArgs({
+  options: {
+    mode: {
+      type: "string",
+      short: "m",
+    },
+  } as const,
+});
+
+// setup read line
+const rl: readline.Interface = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-rl.question("start file upload? (N/y)", (ans) => {
+// start cli
+rl.question("start file upload? (N/y)", (ans: string) => {
   if (ans.toLowerCase() === "y") {
+    // start process
     mainAsync()
       .then((res) => {
         console.log(res.status, res.statusText);
@@ -25,33 +46,23 @@ rl.question("start file upload? (N/y)", (ans) => {
         console.log(err);
       })
       .finally(() => {
+        // @TODO call other cli process
         rl.close();
       });
   } else {
+    // end process
     rl.close();
   }
 });
 
+//-----------
+// functions
+//-----------
 const mainAsync = async (): Promise<AxiosResponse> => {
-  //const { values, positionals } = util.parseArgs({ options });
-  const { values } = util.parseArgs({
-    options: {
-      mode: {
-        type: "string",
-        short: "m",
-      },
-    } as const,
-  });
-
-  dotenv.config();
-
-  if (!process.env) {
-    throw new Error("process.env is nothing.");
-  }
-
   const { KINTONE_JSCSS_HOST, KINTONE_JSCSS_USERNAME, KINTONE_JSCSS_PASSWORD } =
     process.env;
 
+  // check .env
   if (!KINTONE_JSCSS_HOST) {
     throw new Error("host is not setting.");
   } else if (!KINTONE_JSCSS_USERNAME) {
@@ -59,22 +70,15 @@ const mainAsync = async (): Promise<AxiosResponse> => {
   } else if (!KINTONE_JSCSS_PASSWORD) {
     throw new Error("password is not setting.");
   }
+
+  // setup js-css-uploader auth
   const auth: types.JsCssUploader.Auth = {
     host: KINTONE_JSCSS_HOST,
     username: KINTONE_JSCSS_USERNAME,
     password: KINTONE_JSCSS_PASSWORD,
   };
 
-  //const config: types.JsCssUploader.Config = {};
-
-  switch (values.mode) {
-    case "dev":
-    case "test":
-    case "prod":
-      break;
-    default:
-  }
-
+  // check js-css-uploader mode.
   const mode: types.JsCssUploader.Mode =
     values.mode === "dev"
       ? values.mode
@@ -84,6 +88,7 @@ const mainAsync = async (): Promise<AxiosResponse> => {
       ? values.mode
       : "dev";
 
+  // load js-css-uploader config
   const json = (await import(`${__dirname}/kjcc.cjs`)) as object;
   const config: types.JsCssUploader.Config = json;
 
