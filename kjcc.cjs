@@ -1,16 +1,14 @@
 // @ts-check
 
-/** @type {import("./src/types/js-css-uploader").KintoneJsCssUploaderConfig} */
+/** @type {import("./src/types").JsCssUploader.Config} */
 module.exports = {
-  /** @type {import("./src/types/js-css-uploader").KintoneJsCssUploaderEntry} */
+  /** @type {import("./src/types").JsCssUploader.Entry} */
   dev: {
     app: "5",
     scope: "ALL",
-    /** @type {import("./src/types/js-css-uploader").KintoneJsCssUploaderEntryKind} */
     desktop: {
       js: ["./test/mock/mock.js"],
     },
-    /** @type {import("./src/types/js-css-uploader").KintoneJsCssUploaderEntryKind} */
     mobile: true,
   },
   test: {

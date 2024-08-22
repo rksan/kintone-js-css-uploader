@@ -2,26 +2,26 @@ import util from "@/lib/util";
 
 import type * as types from "@/types";
 import {
-  Uploader,
-  FileUploadRequestInfo,
-  FileUploadResponseInfo,
+  FileUploaderProperty,
+  FileUploaderRequestInfo,
+  FileUploaderResponseInfo,
 } from "../types";
 
 export class JsCssUploaderConfig {
-  #config: types.KintoneJsCssUploaderConfig;
-  #mode: types.KintoneJsCssUploderMode;
-  #entry: types.KintoneJsCssUploaderEntry;
+  #config: types.JsCssUploader.Config;
+  #mode: types.JsCssUploader.Mode;
+  #entry: types.JsCssUploader.Entry;
 
   constructor(
-    config: types.KintoneJsCssUploaderConfig,
-    mode: types.KintoneJsCssUploderMode
+    config: types.JsCssUploader.Config,
+    mode: types.JsCssUploader.Mode
   ) {
     this.#config = config;
     this.#mode = mode;
     this.#entry = this.#loadEntry(this.#config, this.#mode);
   }
 
-  get entry(): types.KintoneJsCssUploaderEntry {
+  get entry(): types.JsCssUploader.Entry {
     return this.#entry;
   }
 
@@ -31,12 +31,12 @@ export class JsCssUploaderConfig {
    * @returns {types.kintone.rest.Customize.RestRequest}
    */
   createCustomizeRequest(
-    resInfos: FileUploadResponseInfo[]
+    resInfos: FileUploaderResponseInfo[]
   ): types.kintone.rest.Customize.RestRequest {
     const entry = this.#entry;
     const { app, scope } = entry;
 
-    const req: types.kintone.rest.Customize.RestRequest = util.deepClone({
+    const request: types.kintone.rest.Customize.RestRequest = util.deepClone({
       app,
       scope,
     });
@@ -47,42 +47,44 @@ export class JsCssUploaderConfig {
         const data = res.data as types.kintone.rest.FileUpload.RestResponse;
         const { fileKey } = data;
 
-        if (!req[target]) req[target] = {};
-        if (!req[target][kind]) req[target][kind] = [];
+        if (!request[target]) request[target] = {};
+        if (!request[target][kind]) request[target][kind] = [];
 
-        req[target][kind].push({ type: "FILE", file: { fileKey } });
+        request[target][kind].push({ type: "FILE", file: { fileKey } });
       });
     });
 
-    return req;
+    return request;
   }
 
-  createFileUploadRequest(target: Uploader["target"]): FileUploadRequestInfo[] {
-    const fileInfos: types.KintoneJsCssUploaderEntryFilePaths[] = [];
+  createFileUploadRequest(
+    target: FileUploaderProperty["target"]
+  ): FileUploaderRequestInfo[] {
+    const fileInfos: types.JsCssUploader.FilePaths[] = [];
 
     fileInfos.push(...this.#parseEntry(target));
 
-    const reqs: FileUploadRequestInfo[] = [];
+    const reqs: FileUploaderRequestInfo[] = [];
 
-    fileInfos.forEach((info: types.KintoneJsCssUploaderEntryFilePaths) => {
+    fileInfos.forEach((info: types.JsCssUploader.FilePaths) => {
       (["js", "css"] as const)
-        .map((kind): FileUploadRequestInfo | undefined => {
+        .map((kind): FileUploaderRequestInfo | undefined => {
           return info[kind]
             ? { target, kind, filePaths: info[kind] }
             : undefined;
         })
         .filter((r) => r !== undefined)
-        .forEach((req: FileUploadRequestInfo) => reqs.push(req));
+        .forEach((req: FileUploaderRequestInfo) => reqs.push(req));
     });
 
     return reqs;
   }
 
   #parseEntry(
-    target: Uploader["target"]
-  ): types.KintoneJsCssUploaderEntryFilePaths[] {
+    target: FileUploaderProperty["target"]
+  ): types.JsCssUploader.FilePaths[] {
     const entry = this.#entry;
-    const filesInfo: types.KintoneJsCssUploaderEntryFilePaths[] = [];
+    const filesInfo: types.JsCssUploader.FilePaths[] = [];
 
     const files = entry[target];
 
@@ -101,9 +103,9 @@ export class JsCssUploaderConfig {
   }
 
   #loadEntry(
-    config: types.KintoneJsCssUploaderConfig,
-    mode: types.KintoneJsCssUploderMode
-  ): types.KintoneJsCssUploaderEntry {
+    config: types.JsCssUploader.Config,
+    mode: types.JsCssUploader.Mode
+  ): types.JsCssUploader.Entry {
     let entry = config[mode];
     const excludes = [mode];
 
