@@ -89,7 +89,7 @@ const mainAsync = async (): Promise<AxiosResponse> => {
       : "dev";
 
   // load js-css-uploader config
-  const json = (await import(`${__dirname}/kjcc.cjs`)) as object;
+  const json = (await import(`${__dirname}/kjcurc.js`)) as object;
   const config: types.JsCssUploader.Config = json;
 
   const res: AxiosResponse = await jsCssUploaderAsync(auth, config, mode);

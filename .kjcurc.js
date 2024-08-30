@@ -7,15 +7,19 @@ module.exports = {
     app: "5",
     scope: "ALL",
     desktop: {
-      js: ["./test/mock/mock.js"],
+      js: ["./test/excludes/mock.js"],
     },
     mobile: true,
   },
+  /** @type {import("./src/types").JsCssUploader.Entry} */
   test: {
+    app: "6",
     extends: "dev",
     exec: ["node --version"],
   },
+  /** @type {import("./src/types").JsCssUploader.Entry} */
   prod: {
+    app: "7",
     extends: "dev",
   },
 };

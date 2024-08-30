@@ -6,7 +6,7 @@ import type {
 } from "./types";
 
 import * as rest from "../kintone/rest";
-import { JsCssUploaderConfig } from "./classes/Config";
+import { JsCssUploaderConfig } from "./classes/JsCssUploaderConfig";
 
 /**
  * kintoneJsUpAsync

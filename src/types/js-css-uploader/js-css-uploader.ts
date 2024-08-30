@@ -10,7 +10,7 @@ export type FilePaths = {
 export type Entry = {
   extends?: Mode;
   app: string | number;
-  scope: "ALL" | "ADMIN" | "NONE";
+  scope?: "ALL" | "ADMIN" | "NONE";
   desktop?: boolean | FilePaths;
   mobile?: boolean | FilePaths;
   exec?: string[];
